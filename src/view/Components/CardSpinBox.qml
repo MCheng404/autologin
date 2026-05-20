@@ -55,7 +55,7 @@ Rectangle {
             font.pixelSize: 11
             font.capitalization: Font.AllUppercase
             font.letterSpacing: 0.5
-            font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+            font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
             renderType: Text.NativeRendering
             font.hintingPreference: Font.PreferFullHinting
             color: themeVM.palette.textTertiary
@@ -103,7 +103,7 @@ Rectangle {
                 text: root.value.toString()
                 font.pixelSize: 22
                 font.weight: Font.DemiBold
-                font.family: "Sarasa Mono SC, Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, monospace"
+                font.family: "JetBrains Mono, LXGW Neo XiHei Plus, monospace"
                 renderType: Text.NativeRendering
                 font.hintingPreference: Font.PreferFullHinting
                 color: themeVM.palette.textPrimary
@@ -148,7 +148,7 @@ Rectangle {
         Text {
             text: root.unit
             font.pixelSize: 12
-            font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+            font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
             renderType: Text.NativeRendering
             font.hintingPreference: Font.PreferFullHinting
             color: themeVM.palette.textTertiary

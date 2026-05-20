@@ -70,7 +70,7 @@ Item {
                 }
                 font.pixelSize: 12
                 font.weight: Font.Medium
-                font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+                font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
                 renderType: Text.NativeRendering
                 font.hintingPreference: Font.PreferFullHinting
                 color: root._textColor

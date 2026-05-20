@@ -1,66 +1,21 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
+import "../Components"
 
 /**
  * 账户信息卡片（用户名/密码）
  *
- * 卡片自带主题背景
- * 注意：TextInput 无 placeholderText 属性，用 Text overlay 模拟
+ * 使用 GlassCard 高斯模糊玻璃背景。
+ * 注意：TextInput 无 placeholderText 属性，用 Text overlay 模拟。
  */
-Rectangle {
+GlassCard {
     id: root
 
     required property var settingsVM
     required property var themeVM
 
-    radius: 16
-    color: themeVM.palette.cardBackground
-    border.color: themeVM.palette.cardBorder
-    border.width: 1
+
     implicitHeight: col.implicitHeight + 32
-
-    // 卡片投影层
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: -4
-        radius: parent.radius + 4
-        color: themeVM.palette.cardShadow
-        z: -1
-
-        Behavior on color {
-            ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-        }
-    }
-
-    // 悬停高亮边框
-    Rectangle {
-        id: hoverBorder
-        anchors.fill: parent
-        radius: parent.radius
-        color: "transparent"
-        border.color: themeVM.palette.primary
-        border.width: 1
-        opacity: 0
-
-        Behavior on opacity {
-            ColorAnimation { duration: 200 }
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        onContainsMouseChanged: {
-            hoverBorder.opacity = containsMouse ? 0.4 : 0
-        }
-    }
-
-    Behavior on color {
-        ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-    }
-    Behavior on border.color {
-        ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-    }
 
     ColumnLayout {
         id: col
@@ -71,13 +26,13 @@ Rectangle {
         spacing: 12
 
         // 卡片标题
-        Text {
+        ShadowText {
             text: "账户信息"
             font.pixelSize: 11
             font.weight: Font.DemiBold
             font.capitalization: Font.AllUppercase
             font.letterSpacing: 1.2
-            font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+            font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
             renderType: Text.NativeRendering
             font.hintingPreference: Font.PreferFullHinting
             color: themeVM.palette.textTertiary
@@ -92,7 +47,7 @@ Rectangle {
             Text {
                 text: "用户名"
                 font.pixelSize: 11
-                font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+                font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
                 renderType: Text.NativeRendering
                 font.hintingPreference: Font.PreferFullHinting
                 font.capitalization: Font.AllUppercase
@@ -122,7 +77,7 @@ Rectangle {
                     anchors.margins: 10
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 13
-                    font.family: "Sarasa Mono SC, Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, monospace"
+                    font.family: "JetBrains Mono, LXGW Neo XiHei Plus, monospace"
                     renderType: Text.NativeRendering
                     font.hintingPreference: Font.PreferFullHinting
                     color: themeVM.palette.textPrimary
@@ -140,7 +95,7 @@ Rectangle {
                     anchors.margins: 10
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 13
-                    font.family: "Sarasa Mono SC, Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, monospace"
+                    font.family: "JetBrains Mono, LXGW Neo XiHei Plus, monospace"
                     renderType: Text.NativeRendering
                     font.hintingPreference: Font.PreferFullHinting
                     color: themeVM.palette.textTertiary
@@ -160,7 +115,7 @@ Rectangle {
             Text {
                 text: "密码"
                 font.pixelSize: 11
-                font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+                font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
                 renderType: Text.NativeRendering
                 font.hintingPreference: Font.PreferFullHinting
                 font.capitalization: Font.AllUppercase
@@ -190,7 +145,7 @@ Rectangle {
                     anchors.margins: 10
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 13
-                    font.family: "Sarasa Mono SC, Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, monospace"
+                    font.family: "JetBrains Mono, LXGW Neo XiHei Plus, monospace"
                     renderType: Text.NativeRendering
                     font.hintingPreference: Font.PreferFullHinting
                     color: themeVM.palette.textPrimary
@@ -209,7 +164,7 @@ Rectangle {
                     anchors.margins: 10
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 13
-                    font.family: "Sarasa Mono SC, Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, monospace"
+                    font.family: "JetBrains Mono, LXGW Neo XiHei Plus, monospace"
                     renderType: Text.NativeRendering
                     font.hintingPreference: Font.PreferFullHinting
                     color: themeVM.palette.textTertiary

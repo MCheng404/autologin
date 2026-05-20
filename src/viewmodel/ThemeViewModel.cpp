@@ -152,7 +152,15 @@ void ThemeViewModel::updatePalette()
             {QStringLiteral("hoverBackground"),    QStringLiteral("#1e293b")},
             {QStringLiteral("cardShadow"),        QStringLiteral("#00000040")},
             {QStringLiteral("closeHover"),         QStringLiteral("#334155")},
-            {QStringLiteral("overlay"),             QStringLiteral("#00000080")}
+            {QStringLiteral("overlay"),             QStringLiteral("#00000080")},
+
+            // ── Liquid Glass ──
+            {QStringLiteral("glassSurface"),        QStringLiteral("#ffffff18")},   // 卡片玻璃面
+            {QStringLiteral("glassSurfaceLight"),   QStringLiteral("#ffffff30")},   // 玻璃高光
+            {QStringLiteral("glassBorder"),         QStringLiteral("#ffffff22")},   // 玻璃边框
+            {QStringLiteral("glassInner"),          QStringLiteral("#ffffff14")},   // 玻璃内壁
+            {QStringLiteral("glassRefract"),        QStringLiteral("#a78bfa40")},  // 折射色（淡紫）
+            {QStringLiteral("glassShine"),          QStringLiteral("#ffffff0f")}    // 顶部光泽
         };
     } else {
         m_palette = {
@@ -184,7 +192,15 @@ void ThemeViewModel::updatePalette()
             {QStringLiteral("divider"),             QStringLiteral("#e2e8f0")},
             {QStringLiteral("hoverBackground"),    QStringLiteral("#f1f5f9")},
             {QStringLiteral("closeHover"),         QStringLiteral("#fee2e2")},
-            {QStringLiteral("overlay"),             QStringLiteral("#00000026")}
+            {QStringLiteral("overlay"),             QStringLiteral("#00000026")},
+
+            // ── Liquid Glass ──
+            {QStringLiteral("glassSurface"),        QStringLiteral("#ffffffa0")},
+            {QStringLiteral("glassSurfaceLight"),   QStringLiteral("#ffffffd0")},
+            {QStringLiteral("glassBorder"),         QStringLiteral("#ffffffcc")},
+            {QStringLiteral("glassInner"),          QStringLiteral("#f8fafc50")},
+            {QStringLiteral("glassRefract"),        QStringLiteral("#818cf820")},
+            {QStringLiteral("glassShine"),          QStringLiteral("#ffffff60")}
         };
     }
 

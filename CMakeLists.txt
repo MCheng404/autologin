@@ -124,6 +124,8 @@ qt6_add_qml_module(${PROJECT_NAME}
         src/view/Components/ColorDot.qml
         src/view/Components/FloatingScrollBar.qml
         src/view/Components/ToastPositionSelector.qml
+        src/view/Components/GlassCard.qml
+        src/view/Components/ShadowText.qml
     RESOURCES
         resources/icons/connected.svg
         resources/icons/disconnected.svg
@@ -136,4 +138,7 @@ qt6_add_qml_module(${PROJECT_NAME}
         resources/fonts/embedded/WenYuanRoundedSC-Regular.ttf
         resources/fonts/embedded/WenYuanRoundedSC-Medium.ttf
         resources/fonts/embedded/WenYuanRoundedSC-Bold.ttf
+        resources/fonts/embedded/LXGWNeoXiHeiPlus.ttf
+        resources/fonts/embedded/InterVariable.ttf
+        resources/fonts/embedded/JetBrainsMono-Regular.ttf
 )

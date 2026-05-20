@@ -5,62 +5,16 @@ import "../Components"
 /**
  * 网络设置卡片（热点/优先级）
  *
- * 卡片自带主题背景
+ * 使用 GlassCard 高斯模糊玻璃背景。
  */
-Rectangle {
+GlassCard {
     id: root
 
     required property var settingsVM
     required property var themeVM
 
-    radius: 16
-    color: themeVM.palette.cardBackground
-    border.color: themeVM.palette.cardBorder
-    border.width: 1
+
     implicitHeight: col.implicitHeight + 32
-
-    // 卡片投影层
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: -4
-        radius: parent.radius + 4
-        color: themeVM.palette.cardShadow
-        z: -1
-
-        Behavior on color {
-            ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-        }
-    }
-
-    // 悬停高亮边框
-    Rectangle {
-        id: hoverBorder
-        anchors.fill: parent
-        radius: parent.radius
-        color: "transparent"
-        border.color: themeVM.palette.primary
-        border.width: 1
-        opacity: 0
-
-        Behavior on opacity {
-            ColorAnimation { duration: 200 }
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        onContainsMouseChanged: {
-            hoverBorder.opacity = containsMouse ? 0.4 : 0
-        }
-    }
-
-    Behavior on color {
-        ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-    }
-    Behavior on border.color {
-        ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-    }
 
     ColumnLayout {
         id: col
@@ -71,13 +25,13 @@ Rectangle {
         spacing: 12
 
         // 卡片标题
-        Text {
+        ShadowText {
             text: "网络设置"
             font.pixelSize: 11
             font.weight: Font.DemiBold
             font.capitalization: Font.AllUppercase
             font.letterSpacing: 1.2
-            font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+            font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
             renderType: Text.NativeRendering
             font.hintingPreference: Font.PreferFullHinting
             color: themeVM.palette.textTertiary

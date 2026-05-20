@@ -5,63 +5,16 @@ import "../Components"
 /**
  * 基本设置卡片（点击认证/自启/通知）
  *
- * 卡片自带主题背景，无需外部包裹
+ * 使用 GlassCard 高斯模糊玻璃背景，替换旧的多层 Rectangle 叠加。
  */
-Rectangle {
+GlassCard {
     id: root
 
     required property var settingsVM
     required property var themeVM
 
-    radius: 16
-    color: themeVM.palette.cardBackground
-    border.color: themeVM.palette.cardBorder
-    border.width: 1
-    implicitHeight: col.implicitHeight + 32  // 上下各 16 padding
 
-    // 卡片投影层（悬停时加深）
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: -4
-        radius: parent.radius + 4
-        color: themeVM.palette.cardShadow
-        z: -1
-
-        Behavior on color {
-            ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-        }
-    }
-
-    // 悬停高亮边框
-    Rectangle {
-        id: hoverBorder
-        anchors.fill: parent
-        radius: parent.radius
-        color: "transparent"
-        border.color: themeVM.palette.primary
-        border.width: 1
-        opacity: 0
-
-        Behavior on opacity {
-            ColorAnimation { duration: 200 }
-        }
-    }
-
-    // 整个卡片可悬停
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        onContainsMouseChanged: {
-            hoverBorder.opacity = containsMouse ? 0.4 : 0
-        }
-    }
-
-    Behavior on color {
-        ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-    }
-    Behavior on border.color {
-        ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-    }
+    implicitHeight: col.implicitHeight + 32
 
     ColumnLayout {
         id: col
@@ -72,13 +25,13 @@ Rectangle {
         spacing: 12
 
         // 卡片标题
-        Text {
+        ShadowText {
             text: "基本功能"
             font.pixelSize: 11
             font.weight: Font.DemiBold
             font.capitalization: Font.AllUppercase
             font.letterSpacing: 1.2
-            font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+            font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
             renderType: Text.NativeRendering
             font.hintingPreference: Font.PreferFullHinting
             color: themeVM.palette.textTertiary
@@ -134,7 +87,7 @@ Rectangle {
                 font.pixelSize: 11
                 font.capitalization: Font.AllUppercase
                 font.letterSpacing: 0.5
-                font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+                font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
                 renderType: Text.NativeRendering
                 font.hintingPreference: Font.PreferFullHinting
                 color: themeVM.palette.textSecondary

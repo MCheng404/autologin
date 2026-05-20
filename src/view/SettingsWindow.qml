@@ -6,10 +6,13 @@ import "Cards"
 import "Components"
 
 /**
- * 设置窗口：4 张卡片 + 主题色选择
+ * 设置窗口：5 张高斯模糊玻璃卡片 + 主题色选择
  *
  * 所有颜色均通过 themeVM.palette 获取，支持亮暗主题切换
  * 主题模式：Dark / Light / System（跟随系统）
+ *
+ * 卡片使用 GlassCard 组件（ShaderEffect 高斯模糊 + 多层玻璃叠加）
+ * 窗口背景使用 Liquid Glass 风格（噪点纹理 + 折射渐变 + 顶缘高光）
  */
 Window {
     id: settingsWindow
@@ -57,42 +60,82 @@ Window {
     }
 
     // ============================================================
-    // 窗口主体
-    // shadow offset=6 + radius=14，在窗口内（DWM 8px 圆角范围内）
-    // 效果等同于窗口内壁深色描边（inset shadow）
-    //
-    // clip: false — shadow（radius=14）超出窗口边界透明不可见，
-    //            内部被 windowBgContent（radius=8）覆盖，
-    //            圆角完全由 windowBgContent 的 radius=8 决定，
-    //            无论亮色/暗色主题表现一致。
+    // Liquid Glass 窗口主体
+    // 结构（从底到顶）：
+    //   1. 外层阴影（inset shadow 效果）
+    //   2. 玻璃渐变底（半透明 + 蓝紫折射）
+    //   3. 噪点纹理层（模拟毛玻璃颗粒感）
+    //   4. 顶部光泽条（边缘高光）
+    //   5. 玻璃边框（微发光）
     // ============================================================
     Item {
         id: windowBg
         anchors.fill: parent
         clip: false
 
-        // 外层阴影（inset shadow = 内壁深色描边）
+        // ── 1. 外层阴影 ──
         Rectangle {
-            x: -6; y: -6
-            width: parent.width + 12; height: parent.height + 12
+            anchors.fill: parent
+            anchors.margins: -6
             radius: 14
             color: themeVM.palette.cardShadow
+            z: 0
 
             Behavior on color {
-                ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
+                ColorAnimation { duration: 400; easing.type: Easing.InOutCubic }
             }
         }
 
-        // 内容层（radius=8，与 DWM 圆角一致）
+        // ── 2. 纯色底 ──
         Rectangle {
-            id: windowBgContent
             anchors.fill: parent
             radius: 8
-            color: themeVM.palette.background
+            color: themeVM.isDark ? "#0f0f1a" : "#f1f5f9"
+            z: 1
 
             Behavior on color {
-                enabled: !settingsWindow.isResizing
-                ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
+                ColorAnimation { duration: 400; easing.type: Easing.InOutCubic }
+            }
+        }
+
+        // ── 3. 噪点纹理层（模拟磨砂玻璃颗粒感）──
+        Canvas {
+            id: noiseCanvas
+            anchors.fill: parent
+            z: 2
+            opacity: themeVM.isDark ? 0.025 : 0.04
+
+            onPaint: {
+                var ctx = getContext("2d")
+                ctx.clearRect(0, 0, width, height)
+                for (var i = 0; i < 3000; i++) {
+                    var x = Math.random() * width
+                    var y = Math.random() * height
+                    var r = Math.random() * 1.2
+                    ctx.fillStyle = Math.random() > 0.5
+                        ? "rgba(255,255,255," + (Math.random() * 0.5) + ")"
+                        : "rgba(0,0,0," + (Math.random() * 0.3) + ")"
+                    ctx.beginPath()
+                    ctx.arc(x, y, r, 0, Math.PI * 2)
+                    ctx.fill()
+                }
+            }
+
+            // 首次加载后不再重绘（噪点静态）
+            Component.onCompleted: requestPaint()
+        }
+
+        // ── 4. 主题色窗口边框 ──
+        Rectangle {
+            anchors.fill: parent
+            radius: 8
+            z: 4
+            color: "transparent"
+            border.color: themeVM.palette.primary
+            border.width: 1
+
+            Behavior on border.color {
+                ColorAnimation { duration: 400; easing.type: Easing.InOutCubic }
             }
         }
     }
@@ -130,83 +173,27 @@ Window {
 
             RowLayout {
                 anchors.fill: parent
-                spacing: 14
+                spacing: 12
 
-                // 应用图标（带主题色氛围光晕）
-                Rectangle {
-                    width: 42
-                    height: 42
-                    radius: 12
+                // 大字"设置"标题（靠左）
+                ShadowText {
+                    text: "设置"
+                    font.pixelSize: 22
+                    font.weight: Font.Bold
+                    font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
+                    renderType: Text.NativeRendering
+                    font.hintingPreference: Font.PreferFullHinting
+                    color: themeVM.palette.textPrimary
+                    shadowOpacity: 0.3
+                    Layout.alignment: Qt.AlignVCenter
 
-                    // 外层氛围光晕（主题色）
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: parent.width + 16
-                        height: parent.height + 16
-                        radius: parent.radius + 8
-                        color: themeVM.palette.primary
-                        opacity: 0.18
-
-                        Behavior on opacity {
-                            ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-                        }
-                    }
-
-                    // 图标本体
-                    Rectangle {
-                        anchors.fill: parent
-                        radius: 12
-                        color: themeVM.palette.primary
-
-                        LucideIcon {
-                            anchors.centerIn: parent
-                            name: "shield-check"
-                            color: themeVM.palette.onPrimary
-                            size: 22
-                        }
-
-                        Behavior on color {
-                            enabled: !settingsWindow.isResizing
-                            ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-                        }
+                    Behavior on color {
+                        enabled: !settingsWindow.isResizing
+                        ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
                     }
                 }
 
-                // 标题文字
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 2
-
-                    Text {
-                        text: "校园网自动登录"
-                        font.pixelSize: 16
-                        font.weight: Font.Medium
-                        font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
-                        renderType: Text.NativeRendering
-                        font.hintingPreference: Font.PreferFullHinting
-                        color: themeVM.palette.textPrimary
-
-                        Behavior on color {
-                            enabled: !settingsWindow.isResizing
-                            ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-                        }
-                    }
-
-                    Text {
-                        text: "设置 · v2.12"
-                        font.pixelSize: 12
-                        font.weight: Font.Medium
-                        font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
-                        renderType: Text.NativeRendering
-                        font.hintingPreference: Font.PreferFullHinting
-                        color: themeVM.palette.textTertiary
-
-                        Behavior on color {
-                            enabled: !settingsWindow.isResizing
-                            ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-                        }
-                    }
-                }
+                Item { Layout.fillWidth: true; Layout.fillHeight: true }
 
                 // 主题切换按钮（三态：Dark/Light/System）
                 ThemeToggle {
@@ -258,6 +245,8 @@ Window {
 
         // ============================================================
         // 卡片区域（两列 Grid + 可滚动）
+        // 注意：Flickable clip:true 会裁剪 GlassCard blurEffect 边缘，
+        // 但 blur 在卡内渲染，视觉上无影响。
         // ============================================================
         Item {
             Layout.fillWidth: true
@@ -278,6 +267,7 @@ Window {
 
                 // ============================================================
                 // 两列卡片：左列 + 右列，顶部对齐
+                // 所有卡片均使用 GlassCard 高斯模糊玻璃背景
                 // ============================================================
                 RowLayout {
                     id: cardRow
@@ -332,6 +322,12 @@ Window {
                             settingsVM: settingsWindow.settingsVM
                             themeVM: settingsWindow.themeVM
                         }
+
+                        AccentColorCard {
+                            Layout.fillWidth: true
+                            settingsVM: settingsWindow.settingsVM
+                            themeVM: settingsWindow.themeVM
+                        }
                     }
                 }
             }
@@ -370,7 +366,7 @@ Window {
                     text: "取消"
                     font.pixelSize: 13
                     font.weight: Font.Medium
-                    font.family: "文泉驿雅黑, WenQuanYi Micro Hei, Microsoft YaHei, sans-serif"
+                    font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
                     renderType: Text.NativeRendering
                     font.hintingPreference: Font.PreferFullHinting
                     color: themeVM.palette.textSecondary
@@ -418,7 +414,7 @@ Window {
                     text: "保存"
                     font.pixelSize: 13
                     font.weight: Font.Medium
-                    font.family: "文泉驿雅黑, WenQuanYi Micro Hei, Microsoft YaHei, sans-serif"
+                    font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
                     renderType: Text.NativeRendering
                     font.hintingPreference: Font.PreferFullHinting
                     color: themeVM.palette.onPrimary

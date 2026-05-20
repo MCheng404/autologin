@@ -49,7 +49,7 @@ RowLayout {
                 text: "右下"
                 font.pixelSize: 11
                 font.weight: position === 0 ? Font.Medium : Font.Normal
-                font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+                font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
                 color: {
                     if (!root.isEnabled) return themePalette ? themePalette.textTertiary : "#888"
                     return position === 0 ? (themePalette ? themePalette.onPrimary : "#fff") : (themePalette ? themePalette.textSecondary : "#aaa")
@@ -95,7 +95,7 @@ RowLayout {
                 text: "左下"
                 font.pixelSize: 11
                 font.weight: position === 1 ? Font.Medium : Font.Normal
-                font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+                font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
                 color: {
                     if (!root.isEnabled) return themePalette ? themePalette.textTertiary : "#888"
                     return position === 1 ? (themePalette ? themePalette.onPrimary : "#fff") : (themePalette ? themePalette.textSecondary : "#aaa")
@@ -141,7 +141,7 @@ RowLayout {
                 text: "顶部"
                 font.pixelSize: 11
                 font.weight: position === 2 ? Font.Medium : Font.Normal
-                font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+                font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
                 color: {
                     if (!root.isEnabled) return themePalette ? themePalette.textTertiary : "#888"
                     return position === 2 ? (themePalette ? themePalette.onPrimary : "#fff") : (themePalette ? themePalette.textSecondary : "#aaa")

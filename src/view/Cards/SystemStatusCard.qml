@@ -1,67 +1,23 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
+import "../Components"
 
 /**
  * 系统状态卡片（时钟 + 运行时间 + 上次认证间隔）
  *
+ * 使用 GlassCard 高斯模糊玻璃背景。
  * appStartMs 由 C++ TrayViewModel 构造函数在应用启动时记录，
  * 比 QML 的 Component.onCompleted 更早、更可靠。
  */
-Rectangle {
+GlassCard {
     id: root
 
     // ---- 公开属性 ----
     required property var trayVM
     required property var themeVM
 
-    radius: 16
-    color: themeVM.palette.cardBackground
-    border.color: themeVM.palette.cardBorder
-    border.width: 1
+
     implicitHeight: col.implicitHeight + 32
-
-    // 卡片投影层
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: -4
-        radius: parent.radius + 4
-        color: themeVM.palette.cardShadow
-        z: -1
-
-        Behavior on color {
-            ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-        }
-    }
-
-    // 悬停高亮边框
-    Rectangle {
-        id: hoverBorder
-        anchors.fill: parent
-        radius: parent.radius
-        color: "transparent"
-        border.color: themeVM.palette.primary
-        border.width: 1
-        opacity: 0
-
-        Behavior on opacity {
-            ColorAnimation { duration: 200 }
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        onContainsMouseChanged: {
-            hoverBorder.opacity = containsMouse ? 0.4 : 0
-        }
-    }
-
-    Behavior on color {
-        ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-    }
-    Behavior on border.color {
-        ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-    }
 
     // ---- 辅助函数 ----
 
@@ -83,7 +39,7 @@ Rectangle {
     // 当前系统时间字符串（每秒刷新）
     property string timeStr: "00:00:00"
 
-    // 当前系统日期字符串（Timer 驱动）
+    // 当前系统日期字符串
     property string dateStr: (function() {
         var d = new Date()
         var week = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
@@ -113,7 +69,7 @@ Rectangle {
                        String(d.getMinutes()).padStart(2, "0") + ":" +
                        String(d.getSeconds()).padStart(2, "0")
 
-            // 日期（周几中文映射）
+            // 日期
             var week = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
             dateStr = d.getFullYear() + "年" +
                        String(d.getMonth() + 1).padStart(2, "0") + "月" +
@@ -137,16 +93,16 @@ Rectangle {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.margins: 16
-        spacing: 12
+        spacing: 16
 
         // 卡片标题
-        Text {
+        ShadowText {
             text: "系统状态"
             font.pixelSize: 11
             font.weight: Font.DemiBold
             font.capitalization: Font.AllUppercase
             font.letterSpacing: 1.2
-            font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+            font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
             renderType: Text.NativeRendering
             font.hintingPreference: Font.PreferFullHinting
             color: themeVM.palette.textTertiary
@@ -156,13 +112,13 @@ Rectangle {
         // 时间 + 日期（大号字体，居中）
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 2
+            spacing: 6
 
             Text {
                 text: root.timeStr
-                font.pixelSize: 28
+                font.pixelSize: 34
                 font.weight: Font.Light
-                font.family: "Sarasa Mono SC, Sarasa UI SC, WenQuanYi Rounded SC, monospace"
+                font.family: "JetBrains Mono, LXGW Neo XiHei Plus, monospace"
                 renderType: Text.NativeRendering
                 font.hintingPreference: Font.PreferFullHinting
                 color: themeVM.palette.textPrimary
@@ -173,7 +129,7 @@ Rectangle {
                 text: root.dateStr
                 font.pixelSize: 12
                 font.weight: Font.Normal
-                font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
+                font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
                 renderType: Text.NativeRendering
                 font.hintingPreference: Font.PreferFullHinting
                 color: themeVM.palette.textTertiary
@@ -196,13 +152,13 @@ Rectangle {
             // 运行时间
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 2
+                spacing: 8
 
                 Text {
                     text: "运行时间"
-                    font.pixelSize: 10
+                    font.pixelSize: 11
                     font.weight: Font.Normal
-                    font.family: "Sarasa UI SC, WenQuanYi Rounded SC, sans-serif"
+                    font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
                     renderType: Text.NativeRendering
                     color: themeVM.palette.textTertiary
                     Layout.alignment: Qt.AlignHCenter
@@ -210,9 +166,9 @@ Rectangle {
 
                 Text {
                     text: root.runtimeStr
-                    font.pixelSize: 14
+                    font.pixelSize: 18
                     font.weight: Font.Medium
-                    font.family: "Sarasa Mono SC, Sarasa UI SC, WenQuanYi Rounded SC, monospace"
+                    font.family: "JetBrains Mono, LXGW Neo XiHei Plus, monospace"
                     renderType: Text.NativeRendering
                     color: themeVM.palette.textSecondary
                     Layout.alignment: Qt.AlignHCenter
@@ -221,6 +177,8 @@ Rectangle {
 
             // 竖线分隔
             Rectangle {
+                Layout.leftMargin: 16
+                Layout.rightMargin: 16
                 width: 1
                 Layout.fillHeight: true
                 color: themeVM.palette.divider
@@ -229,13 +187,13 @@ Rectangle {
             // 距上次认证
             ColumnLayout {
                 Layout.fillWidth: true
-                spacing: 2
+                spacing: 8
 
                 Text {
                     text: "距上次认证"
-                    font.pixelSize: 10
+                    font.pixelSize: 11
                     font.weight: Font.Normal
-                    font.family: "Sarasa UI SC, WenQuanYi Rounded SC, sans-serif"
+                    font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
                     renderType: Text.NativeRendering
                     color: themeVM.palette.textTertiary
                     Layout.alignment: Qt.AlignHCenter
@@ -243,9 +201,9 @@ Rectangle {
 
                 Text {
                     text: root.sinceAuthStr
-                    font.pixelSize: 14
+                    font.pixelSize: 18
                     font.weight: Font.Medium
-                    font.family: "Sarasa Mono SC, Sarasa UI SC, WenQuanYi Rounded SC, monospace"
+                    font.family: "JetBrains Mono, LXGW Neo XiHei Plus, monospace"
                     renderType: Text.NativeRendering
                     color: themeVM.palette.textSecondary
                     Layout.alignment: Qt.AlignHCenter

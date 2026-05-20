@@ -83,15 +83,14 @@ bool App::initialize()
         loadFont(QStringLiteral(":/AutoLogin/resources/fonts/WenYuanSansSC-Regular.ttf"));
         loadFont(QStringLiteral(":/AutoLogin/resources/fonts/WenYuanSansSC-Bold.ttf"));
 
-        // 霞鹜文楷系列
-        loadFont(QStringLiteral(":/AutoLogin/fonts/embedded/SarasaMonoSC-Regular.ttf"));
-        loadFont(QStringLiteral(":/AutoLogin/fonts/embedded/SarasaUiSC-Regular.ttf"));
-        loadFont(QStringLiteral(":/AutoLogin/fonts/embedded/SarasaUiSC-SemiBold.ttf"));
+        // 霞鹜新晰黑 Plus（中文）
+        loadFont(QStringLiteral(":/AutoLogin/resources/fonts/embedded/LXGWNeoXiHeiPlus.ttf"));
 
-        // 霞鹜文楷圆体
-        loadFont(QStringLiteral(":/AutoLogin/fonts/embedded/WenYuanRoundedSC-Regular.ttf"));
-        loadFont(QStringLiteral(":/AutoLogin/fonts/embedded/WenYuanRoundedSC-Medium.ttf"));
-        loadFont(QStringLiteral(":/AutoLogin/fonts/embedded/WenYuanRoundedSC-Bold.ttf"));
+        // Inter Variable（英文）
+        loadFont(QStringLiteral(":/AutoLogin/resources/fonts/embedded/InterVariable.ttf"));
+
+        // JetBrains Mono（数字等宽）
+        loadFont(QStringLiteral(":/AutoLogin/resources/fonts/embedded/JetBrainsMono-Regular.ttf"));
     }
 
     // 1. 创建 Model 层

@@ -4,67 +4,30 @@ import "../Components"
 
 /**
  * 主题色选择卡片
+ *
+ * 使用 GlassCard 毛玻璃背景。
  */
-Rectangle {
+GlassCard {
     id: root
 
     required property var settingsVM
     required property var themeVM
 
-    radius: 16
-    color: themeVM.palette.cardBackground
-    border.color: themeVM.palette.cardBorder
-    border.width: 1
     implicitHeight: col.implicitHeight + 32
 
-    // 卡片投影层
-    Rectangle {
-        anchors.fill: parent
-        anchors.margins: -4
-        radius: parent.radius + 4
-        color: themeVM.palette.cardShadow
-        z: -1
+    // ── Flow 流动渐变状态 ──
+    property bool flowEnabled: false
 
-        Behavior on color {
-            ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
+    Timer {
+        id: flowTimer
+        interval: 120
+        repeat: true
+        running: flowEnabled
+        onTriggered: {
+            // 循环切换 16 种主题色
+            var idx = themeVM.accentColorIndex
+            themeVM.accentColorIndex = (idx + 1) % 16
         }
-    }
-
-    // 悬停高亮边框
-    Rectangle {
-        id: hoverBorder
-        anchors.fill: parent
-        radius: parent.radius
-        color: "transparent"
-        border.color: themeVM.palette.primary
-        border.width: 1
-        opacity: 0
-
-        Behavior on opacity {
-            ColorAnimation { duration: 200 }
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        onContainsMouseChanged: {
-            hoverBorder.opacity = containsMouse ? 0.4 : 0
-        }
-    }
-
-    Behavior on color {
-        ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-    }
-    Behavior on border.color {
-        ColorAnimation { duration: 300; easing.type: Easing.InOutCubic }
-    }
-
-    Component.onCompleted: {
-        console.log("AccentColorCard loaded")
-        console.log("  themeVM:", themeVM)
-        console.log("  accentColors.length:", themeVM.accentColors.length)
-        console.log("  accentColorIndex:", themeVM.accentColorIndex)
     }
 
     ColumnLayout {
@@ -75,18 +38,57 @@ Rectangle {
         anchors.margins: 16
         spacing: 12
 
-        // 卡片标题
-        Text {
-            text: "主题色彩"
-            font.pixelSize: 11
-            font.weight: Font.DemiBold
-            font.capitalization: Font.AllUppercase
-            font.letterSpacing: 1.2
-            font.family: "Sarasa UI SC, WenQuanYi Rounded SC, WenQuanYi Micro Hei, sans-serif"
-            renderType: Text.NativeRendering
-            font.hintingPreference: Font.PreferFullHinting
-            color: themeVM.palette.textTertiary
+        // 卡片标题 + Flow 切换按钮
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 8
             Layout.leftMargin: 4
+
+            ShadowText {
+                text: "主题色彩"
+                font.pixelSize: 11
+                font.weight: Font.DemiBold
+                font.capitalization: Font.AllUppercase
+                font.letterSpacing: 1.2
+                font.family: "LXGW Neo XiHei Plus, Inter, sans-serif"
+                renderType: Text.NativeRendering
+                font.hintingPreference: Font.PreferFullHinting
+                color: themeVM.palette.textTertiary
+            }
+
+            Item { Layout.fillWidth: true }
+
+            // Flow 切换按钮
+            Rectangle {
+                width: 36
+                height: 18
+                radius: 9
+                color: root.flowEnabled ? themeVM.palette.primary : "transparent"
+                border.color: root.flowEnabled ? themeVM.palette.primary : themeVM.palette.textTertiary
+                border.width: 1
+                opacity: root.flowEnabled ? 1 : 0.6
+
+                Behavior on color { ColorAnimation { duration: 200 } }
+                Behavior on border.color { ColorAnimation { duration: 200 } }
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "Flow"
+                    font.pixelSize: 8
+                    font.weight: Font.Bold
+                    font.family: "Inter, sans-serif"
+                    color: root.flowEnabled ? "#fff" : themeVM.palette.textTertiary
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        root.flowEnabled = !root.flowEnabled
+                    }
+                }
+            }
         }
 
         // 8x2 颜色网格
