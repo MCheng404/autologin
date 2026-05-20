@@ -1,0 +1,51 @@
+sequenceDiagram
+    participant Main as main()
+    participant App as App
+    participant Settings as Settings
+    participant AuthVM as AuthViewModel
+    participant AuthEngine as AuthEngine
+    participant NetAdapt as NetworkAdapter
+    participant ConnCheck as ConnectivityChecker
+    participant TrayVM as TrayViewModel
+    participant Tray as SystemTray
+
+    Main->>App: initialize()
+    App->>Settings: load() [从注册表加载]
+    App->>AuthVM: setAuthState(Idle)
+    App->>TrayVM: setTooltip("监控中")
+    App->>App: setupWorkerThread()
+
+    Note over App: Worker Thread 启动
+    loop 主循环 (m_running == true)
+        App->>ConnCheck: check()
+        alt 连通 (204)
+            App->>TrayVM: setIcon("connected")
+            App->>Tray: updateIcon(Connected)
+            App->>App: sleep(30s)
+        else 断网
+            App->>NetAdapt: isAirplaneMode()
+            alt 飞行模式
+                App->>App: sleep(60s)
+            else 非飞行模式
+                App->>AuthEngine: isInBlackout()
+                alt 黑名单时段
+                    App->>App: sleep(300s)
+                else 正常时段
+                    App->>NetAdapt: getMacAddress()
+                    App->>NetAdapt: getLocalIp("172.30.255.2")
+                    App->>AuthEngine: authenticate(mac, ip)
+                    AuthEngine->>AuthEngine: 原子锁防抖
+                    AuthEngine->>ConnCheck: HTTP POST 认证
+                    alt 认证成功
+                        AuthEngine->>AuthVM: authCompleted(Success)
+                        AuthVM->>TrayVM: setIcon("connected")
+                        AuthEngine->>AuthEngine: resetFailCount()
+                    else 认证失败
+                        AuthEngine->>AuthEngine: 指数退避计算
+                        AuthEngine->>AuthVM: authCompleted(Failed)
+                        AuthVM->>TrayVM: setIcon("disconnected")
+                    end
+                end
+            end
+        end
+    end

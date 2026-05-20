@@ -1,0 +1,66 @@
+#pragma once
+
+#include <QObject>
+#include <QString>
+#include "platform/SystemTray.h"
+
+class AuthEngine;
+class Settings;
+
+/**
+ * @brief 托盘图标/菜单状态暴露给 QML
+ *
+ * 处理 SystemTray 信号，触发认证/设置/退出等操作
+ * 暴露图标状态、tooltip 等属性
+ */
+class TrayViewModel : public QObject {
+    Q_OBJECT
+
+    Q_PROPERTY(QString iconSource READ iconSource NOTIFY iconChanged)
+    Q_PROPERTY(QString tooltip READ tooltip NOTIFY tooltipChanged)
+    Q_PROPERTY(bool autostartChecked READ autostartChecked NOTIFY autostartCheckedChanged)
+
+public:
+    explicit TrayViewModel(AuthEngine *authEngine, Settings *settings,
+                            QObject *parent = nullptr);
+
+    QString iconSource() const { return m_iconSource; }
+    QString tooltip() const { return m_tooltip; }
+    bool autostartChecked() const { return m_autostartChecked; }
+
+    // QML 可调用方法
+    Q_INVOKABLE void onTrayClicked();
+    Q_INVOKABLE void onShowLog();
+    Q_INVOKABLE void onLogin();
+    Q_INVOKABLE void onCleanLog();
+    Q_INVOKABLE void onToggleAutostart();
+    Q_INVOKABLE void onOpenSettings();
+    Q_INVOKABLE void onQuit();
+
+public slots:
+    /** 认证状态变化回调（0=Connected, 1=Disconnected, 2=Authenticating） */
+    void onAuthStateChanged(int state);
+
+signals:
+    void iconChanged();
+    void tooltipChanged();
+    void autostartCheckedChanged();
+
+    /** 请求清理日志 */
+    void cleanLogRequested();
+
+    /** 请求打开设置窗口（QML 直接监听） */
+    void openSettingsRequested();
+
+private:
+    void setIconSource(const QString &source);
+    void setTooltip(const QString &tip);
+    void setAutostartChecked(bool checked);
+
+    AuthEngine *m_authEngine = nullptr;
+    Settings   *m_settings   = nullptr;
+
+    QString m_iconSource = QStringLiteral("disconnected");
+    QString m_tooltip    = QStringLiteral("校园网自动登录 - 监控中");
+    bool    m_autostartChecked = true;
+};

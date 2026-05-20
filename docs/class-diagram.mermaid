@@ -1,0 +1,213 @@
+classDiagram
+    direction TB
+
+    class App {
+        -AuthEngine* m_authEngine
+        -ConnectivityChecker* m_connectivity
+        -Scheduler* m_scheduler
+        -Logger* m_logger
+        -Settings* m_settings
+        -AuthViewModel* m_authVM
+        -SettingsViewModel* m_settingsVM
+        -TrayViewModel* m_trayVM
+        -ThemeViewModel* m_themeVM
+        -Platform::SystemTray* m_tray
+        -Platform::HotspotManager* m_hotspot
+        -QThread* m_workerThread
+        +initialize() bool
+        +run() int
+        -setupWorkerThread()
+        -setupTrayConnections()
+        -setupViewModelBindings()
+    }
+
+    class Settings {
+        <<QObject>>
+        +Q_PROPERTY: bool clickToAuth
+        +Q_PROPERTY: bool autostart
+        +Q_PROPERTY: bool notifications
+        +Q_PROPERTY: bool autoHotspot
+        +Q_PROPERTY: bool highPriority
+        +Q_PROPERTY: bool schedEnabled
+        +Q_PROPERTY: int schedInterval
+        +Q_PROPERTY: int schedOffset
+        +Q_PROPERTY: QString username
+        +Q_PROPERTY: QString password
+        +load()
+        +save()
+        +signals: settingsChanged()
+    }
+
+    class AuthEngine {
+        <<QObject>>
+        -atomic~bool~ m_busy
+        -atomic~qint64~ m_lastAuthMs
+        -int m_failCount
+        -ConnectivityChecker* m_checker
+        -Logger* m_logger
+        -Settings* m_settings
+        +authenticate(mac: string, ip: string) AuthResult
+        +isBusy() bool
+        +isInBlackout() bool
+        +resetFailCount()
+        +getExponentialBackoff(fails: int) int
+        +signals: authCompleted(result)
+        +signals: statusMessage(msg)
+    }
+
+    class ConnectivityChecker {
+        +check() bool
+        -QNetworkAccessManager* m_nam
+    }
+
+    class Scheduler {
+        <<QObject>>
+        -qint64 m_lastSchedAuth
+        -Settings* m_settings
+        +shouldTrigger(now: qint64) bool
+        +recordTrigger(ts: qint64)
+        +nextTriggerTime() qint64
+        +signals: triggerAuth()
+    }
+
+    class Logger {
+        <<QObject>>
+        -QFile m_logFile
+        -QString m_logPath
+        -QMutex m_mutex
+        +log(msg: QString)
+        +autoCleanup()
+        +manualCleanup() bool
+        +logPath() QString
+        +signals: logMessage(msg)
+    }
+
+    class AuthViewModel {
+        <<QObject>>
+        +Q_PROPERTY: AuthState authState
+        +Q_PROPERTY: QString statusText
+        +Q_PROPERTY: bool isAuthenticating
+        +Q_INVOKABLE triggerLogin()
+        +Q_INVOKABLE checkConnectivity()
+        +signals: authStateChanged()
+    }
+
+    class SettingsViewModel {
+        <<QObject>>
+        +Q_PROPERTY: bool clickToAuth
+        +Q_PROPERTY: bool autostart
+        +Q_PROPERTY: bool notifications
+        +Q_PROPERTY: bool autoHotspot
+        +Q_PROPERTY: bool highPriority
+        +Q_PROPERTY: bool schedEnabled
+        +Q_PROPERTY: int schedInterval
+        +Q_PROPERTY: int schedOffset
+        +Q_PROPERTY: QString username
+        +Q_PROPERTY: QString password
+        +Q_INVOKABLE save()
+        +Q_INVOKABLE load()
+        +Q_INVOKABLE resetDefaults()
+    }
+
+    class TrayViewModel {
+        <<QObject>>
+        +Q_PROPERTY: QString iconSource
+        +Q_PROPERTY: QString tooltip
+        +Q_PROPERTY: bool autostartChecked
+        +Q_INVOKABLE onTrayClicked()
+        +Q_INVOKABLE onShowLog()
+        +Q_INVOKABLE onLogin()
+        +Q_INVOKABLE onCleanLog()
+        +Q_INVOKABLE onToggleAutostart()
+        +Q_INVOKABLE onOpenSettings()
+        +Q_INVOKABLE onQuit()
+    }
+
+    class ThemeViewModel {
+        <<QObject>>
+        +Q_PROPERTY: bool isDark
+        +Q_PROPERTY: QVariantMap palette
+        +Q_INVOKABLE toggle()
+        +signals: isDarkChanged()
+        +signals: paletteChanged()
+    }
+
+    class NetworkAdapter {
+        +isAirplaneMode() bool
+        +hasWlanAdapter() bool
+        +getMacAddress() string
+        +getLocalIp(gateway: string) string
+    }
+
+    class Registry {
+        +readDword(key: QString, value: QString) optional~DWORD~
+        +writeDword(key: QString, value: QString, data: DWORD)
+        +readString(key: QString, value: QString) optional~QString~
+        +writeString(key: QString, value: QString, data: QString)
+        +deleteValue(key: QString, value: QString)
+        +setAutostart(enable: bool)
+        +isAutostartEnabled() bool
+    }
+
+    class HotspotManager {
+        -HMODULE m_combase
+        -bool m_initialized
+        +start() bool
+        +isAvailable() bool
+        +verifyState() int
+        -ensureLoaded() bool
+        -processTetheringResult(pAsyncOp: IInspectable*) int
+    }
+
+    class Notification {
+        -bool m_enabled
+        -HWND m_hwnd
+        -HICON m_icon
+        +show(title: QString, msg: QString, type: Type)
+        +setEnabled(enabled: bool)
+        +setTrayHandle(hwnd: HWND, icon: HICON)
+    }
+
+    class SystemTray {
+        <<QSystemTrayIcon>>
+        -QMenu* m_menu
+        -Status m_status
+        +updateIcon(status: Status)
+        +updateTooltip(status: QString)
+        +signals: showLogRequested()
+        +signals: loginRequested()
+        +signals: cleanLogRequested()
+        +signals: toggleAutostartRequested()
+        +signals: openSettingsRequested()
+        +signals: quitRequested()
+        +signals: trayClicked()
+    }
+
+    App --> AuthEngine : owns
+    App --> ConnectivityChecker : owns
+    App --> Scheduler : owns
+    App --> Logger : owns
+    App --> Settings : owns
+    App --> AuthViewModel : owns
+    App --> SettingsViewModel : owns
+    App --> TrayViewModel : owns
+    App --> ThemeViewModel : owns
+    App --> SystemTray : owns
+    App --> HotspotManager : owns
+
+    AuthEngine --> ConnectivityChecker : uses
+    AuthEngine --> Logger : uses
+    AuthEngine --> Settings : reads
+    AuthEngine --> NetworkAdapter : uses
+    Scheduler --> Settings : reads
+
+    SettingsViewModel --> Settings : binds
+    AuthViewModel --> AuthEngine : observes
+    TrayViewModel --> AuthEngine : triggers
+    TrayViewModel --> Settings : reads
+    ThemeViewModel --> Settings : reads
+
+    AuthEngine ..> NetworkAdapter : platform dependency
+    AuthEngine ..> Registry : platform dependency
+    HotspotManager ..> Registry : platform dependency
+    SystemTray ..> Notification : platform dependency
