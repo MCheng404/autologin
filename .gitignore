@@ -1,0 +1,38 @@
+# Build output
+build/
+*.exe
+*.dll
+*.a
+*.o
+*.obj
+
+# Qt artifacts
+*.rcc
+qmlcache/
+*.qmlc
+*.moc
+moc_*.cpp
+qrc_*.cpp
+
+# CMake/Ninja
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+*.ninja
+*.ninja_deps
+
+# IDE
+.vs/
+.vscode/
+*.user
+*.opensdf
+*.suo
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
